@@ -1,0 +1,51 @@
+# ---- Go build artifacts ----
+# Compiled binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# go build / go install output (if you use a bin/ dir)
+bin/
+out/
+*.out
+
+# go tool cover
+coverage.out
+profile.out
+
+# If you build into a cmd subdir or similar
+cmd/**/bin/
+
+# ---- Dependency / module stuff ----
+# Usually you WANT these tracked:
+#   go.mod
+#   go.sum
+# So don't ignore them.
+
+# If you vendor dependencies but don't want them in git, uncomment:
+# vendor/
+
+# ---- IDE / editor junk ----
+# VS Code
+.vscode/
+
+# GoLand / IntelliJ
+.idea/
+*.iml
+
+# Sublime / others
+*.sublime-project
+*.sublime-workspace
+
+# ---- OS-specific noise ----
+.DS_Store
+Thumbs.db
+
+# ---- Misc ----
+# Logs, temp files
+*.log
+*.tmp
+*.swp
