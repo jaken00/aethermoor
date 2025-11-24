@@ -22,6 +22,13 @@ func randomInt(generationMax int) int {
 	return rand.Intn(generationMax)
 }
 
+/*
+func entityCellTypeGeneration(cellType string) map[string]string {
+
+	return
+}
+*/
+
 func entityGenerationPerCellCount(cellType string) int {
 
 	//switch statement + random gen bounds for entites that spawn iwthin the certain entity zones
@@ -43,8 +50,15 @@ func entityGenerationPerCellCount(cellType string) int {
 	return 0
 }
 
-func (cell *Cell) initEntities() {
+func (cell *Cell) initEntities(position Vec2, templates map[string]EntityTemplate) {
+	numEntities := entityGenerationPerCellCount(cell.CellType)
+	cell.CellEntities = make([]*Entity, numEntities)
 
+	for i := 0; i < numEntities; i++ {
+		rabbitTemplate := templates["rabbit"]
+		entityID := fmt.Sprintf("rabbit_%d_%d_%d", position.XPos, position.YPos, i)
+		cell.CellEntities[i] = SpawnEntityFromTemplate(rabbitTemplate, position, entityID)
+	}
 }
 
 func getRandomCell() string {
@@ -66,9 +80,11 @@ func (cell *Cell) populateCellType() {
 func GenerateWorld(x_length int, y_length int) *WorldMap {
 
 	var worldMap WorldMap
+	var currentPosition Vec2
 	worldMap.X_len = x_length
 	worldMap.Y_len = y_length
 	grid := make([][]Cell, y_length)
+	templates, _ := LoadTemplates("template.json")
 
 	for i := 0; i < x_length; i++ {
 		grid[i] = make([]Cell, x_length)
@@ -79,6 +95,10 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 				CellEntities: nil,
 			}
 			grid[i][j].populateCellType()
+
+			currentPosition.XPos = i
+			currentPosition.YPos = j
+			grid[i][j].initEntities(currentPosition, templates)
 
 		}
 	}
