@@ -1,0 +1,5 @@
+- started the initla types and the map generation
+- the map will have Cell struct which will then have modifiers inside the cell that say what type of cell it is. 
+- For now need to do random generation of the cell types and maybe weighted generation ie -> if grass block more likey to be grass or plain block etc
+- tommorow will focus on each tick updating the cell to determine what entities are isndie the cell and then maybe looking at initial generation and moving logic
+- need to first create a spacial hash to check and udpate cells as ill be traversing a 2d array manyu times. 

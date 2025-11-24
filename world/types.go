@@ -5,14 +5,14 @@ type Vec2 struct {
 	YPos int
 }
 type Entity struct {
-	Name     string
-	Position *Vec2
-	Alive    bool
-	Produces []ResourceEntry
-	Needs    []NeedEntry
-	//ShelterPrefs []string
-	Home      *Vec2
-	Aversions []AversionEntry
+	Name         string
+	Position     *Vec2
+	Alive        bool
+	Produces     []ResourceEntry
+	Needs        []NeedEntry
+	ShelterPrefs []string
+	Home         *Vec2
+	Aversions    []AversionEntry
 }
 type ResourceEntry struct {
 	Type      string
@@ -21,11 +21,11 @@ type ResourceEntry struct {
 	RegenRate float64 //does this regen amount
 }
 type NeedEntry struct {
-	Resource    string //this maps to type of Resource Entry
-	Threshold   float64
+	Resource    string  //this maps to type of Resource Entry
+	Threshold   float64 // when we start looking for this resource
 	Capacity    float64
 	ConsumeRate float64
-	MinInterest float64
+	MinInterest float64 //ignores patches with certain amoutn of grass
 }
 type AversionEntry struct {
 	Resource  string  // flee from entities that produce this resource -> WOLF -> CARNIVOREMEAT the MEAT is descriptor of the production

@@ -9,6 +9,12 @@ type WorldMap struct {
 	Grid [][]Cell
 }
 
+func (cell *Cell) PopulateCellType() {
+	if cell.CellType != "TO_INIT" {
+		return
+	}
+}
+
 func GenerateWorld(x_length int, y_length int) *WorldMap {
 
 	var worldMap WorldMap
@@ -19,7 +25,7 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 		for j := 0; j < y_length; j++ {
 
 			grid[i][j] = Cell{
-				CellType:     "TO_INIT",
+				CellType:     "TO_INIT", //IF TYPE == TO_INIT GENERATE
 				CellEntities: nil,
 			}
 
