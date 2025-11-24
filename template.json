@@ -1,5 +1,6 @@
 {
-    "rabbit": {
+    "rabbit": 
+    {
         "produces": [
             {"type": "MEAT", "max": 5, "regenRate": 0}
         ],
@@ -8,6 +9,24 @@
         ],
         "shelterPrefs": ["GRASS"],
         "aversions": ["CARNIVOREMEAT"]
+    },
+    "wolf": 
+    {
+       "produces": [
+            {"type": "CARNIVOREMEAT", "max": 5, "regenRate": 0}
+        ],
+        "needs": [
+            {"resource": "MEAT", "threshhold": 5, "capacity": 10, "ConsumeRate": 2, "MinInterest": 1}
+        ],
+        "shelterPrefs": ["MOUNTAIN", "CAVE"],
+        "aversions": ["CARNIVOREMEAT"] 
+    },
+    "grass": 
+    {
+        "produces": [
+            {"type": "GRASS", "max": 4, "regenRate": 5} 
+        ]
     }
+
 }
 
