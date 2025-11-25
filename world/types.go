@@ -9,7 +9,7 @@ type Entity struct {
 	Position     *Vec2
 	Alive        bool
 	Produces     []ResourceEntry
-	Needs        []NeedEntry
+	Needs        map[string]*NeedEntry
 	ShelterPrefs []string
 	Home         *Vec2
 	Aversions    []AversionEntry
@@ -20,9 +20,18 @@ type ResourceEntry struct {
 	Max       float64 // Max amount
 	RegenRate float64 //does this regen amount
 }
+
+/*
+	Will need to add a type filter to NeedEntry. 1. food -> so get all of the food types 2. Shelter -> so they go back home after hunger is fulfilled 2. Pro? so they go to do
+	food before shelter? This will later expand into havng need for renown / quests etc
+*/
+
 type NeedEntry struct {
-	Resource    string  //this maps to type of Resource Entry
+	Resource    string //this maps to type of Resource Entry
+	Type        string
+	Priority    int
 	Threshold   float64 // when we start looking for this resource
+	Current     float64
 	Capacity    float64
 	ConsumeRate float64
 	MinInterest float64 //ignores patches with certain amoutn of grass

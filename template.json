@@ -5,7 +5,8 @@
             {"type": "MEAT", "max": 5, "regenRate": 0}
         ],
         "needs": [
-            {"resource": "GRASS", "threshhold": 5, "capacity": 10, "ConsumeRate": 2, "MinInterest": 1}
+            {"resource": "GRASS", "type": "food", "priority": 1, "threshhold": 5, "current": 2, "capacity": 10, "ConsumeRate": 2, "MinInterest": 1},
+            {"resource": "SHELTER", "type": "home", "priority": 2, "threshhold": 5, "capacity": 10, "ConsumeRate": 2, "MinInterest": 1}
         ],
         "shelterPrefs": ["GRASS"],
         "aversions": ["CARNIVOREMEAT"]
