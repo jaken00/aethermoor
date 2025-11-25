@@ -1,9 +1,28 @@
 package world
 
+func tickNeeds(e *Entity) {
+	e.tickNeed("food")
+	e.tickNeed("shelter")
+	//tick more as needed
+
+}
+
 func (worldMap *WorldMap) TickWorld() {
-	//here we need to get the cells from the worldmap and loop through entities within the cell and call various functions
-	// these functions will be:
-	//  maitenance funcitons -> tick hunger, regrow vegitation, check repopulation at shelters
-	//	Action Functions -> Check Aversions, Check Hunger -> Go to Food, Go to Shelter
+
+	for i := 0; i < worldMap.X_len; i++ {
+		for j := 0; j < worldMap.Y_len; j++ {
+			currentGrid := worldMap.Grid[i][j]
+
+			if len(currentGrid.CellEntities) == 0 {
+				continue
+			} else {
+				for _, entity := range currentGrid.CellEntities {
+					tickNeeds(entity) //already a pointer
+					entity.ActOrchestrator()
+
+				}
+			}
+		}
+	}
 
 }

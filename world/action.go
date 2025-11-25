@@ -1,17 +1,13 @@
 package world
 
-func (e *Entity) getHunger() float64 {
-	if need, exists := e.Needs["food"]; exists {
-		return need.Current
+func (e *Entity) tickNeed(needType string) {
+	need, exists := e.Needs[needType]
+	if !exists {
+		return
 	}
-	return 0
-}
 
-func (e *Entity) getShelter() float64 {
-	if need, exists := e.Needs["shelter"]; exists {
-		return need.Current
-	}
-	return 0
+	need.Current -= 1
+
 }
 
 func (e *Entity) needComparison(needType string) bool {
@@ -22,6 +18,23 @@ func (e *Entity) needComparison(needType string) bool {
 	return need.Current < need.Threshold
 }
 
+/*
+	func (e *Entity) locateNeed(needType string, cell *Cell) {
+		need, exists := e.Needs[needType]
+		if !exists {
+			return
+		}
+
+		//need to create a map[string]cell.CellType mapping. I need mappings and data connectionms
+
+		switch cell.CellType {
+		case "PLAINS":
+			//go to!
+			//Will fix this later
+		}
+
+}
+*/
 func (e *Entity) ActOrchestrator() {
 	foodBool := e.needComparison("food")
 	shelterBool := e.needComparison("shelter")
