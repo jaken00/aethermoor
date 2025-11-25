@@ -22,12 +22,25 @@ func randomInt(generationMax int) int {
 	return rand.Intn(generationMax)
 }
 
-/*
-func entityCellTypeGeneration(cellType string) map[string]string {
+func entityCellTypeGeneration(cellType string) string {
+	switch cellType {
+	case "PLAINS":
+		return "rabbit"
+	case "WOODS":
+		return "wolf"
+	case "MOUNTAIN":
+		return "wolf"
+	case "RIVER":
+		return "grass"
+	case "CAVE":
+		return "wolf"
+	case "GRASSLAND":
+		return "grass"
+	}
 
-	return
+	return "none"
+
 }
-*/
 
 func entityGenerationPerCellCount(cellType string) int {
 
@@ -40,7 +53,7 @@ func entityGenerationPerCellCount(cellType string) int {
 	case "MOUNTAIN":
 		return randomInt(4)
 	case "RIVER":
-		return randomInt(0)
+		return randomInt(4)
 	case "CAVE":
 		return randomInt(4)
 	case "GRASSLAND":
@@ -52,11 +65,12 @@ func entityGenerationPerCellCount(cellType string) int {
 
 func (cell *Cell) initEntities(position Vec2, templates map[string]EntityTemplate) {
 	numEntities := entityGenerationPerCellCount(cell.CellType)
+	typeEntity := entityCellTypeGeneration(cell.CellType)
 	cell.CellEntities = make([]*Entity, numEntities)
 
 	for i := 0; i < numEntities; i++ {
-		rabbitTemplate := templates["rabbit"]
-		entityID := fmt.Sprintf("rabbit_%d_%d_%d", position.XPos, position.YPos, i)
+		rabbitTemplate := templates[typeEntity]
+		entityID := fmt.Sprintf("%s_%d", typeEntity, i)
 		cell.CellEntities[i] = SpawnEntityFromTemplate(rabbitTemplate, position, entityID)
 	}
 }
@@ -107,9 +121,23 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 }
 
 func (worldMap *WorldMap) PrintWorldMap() {
+
 	for i := 0; i < len(worldMap.Grid); i++ {
 		for j := 0; j < len(worldMap.Grid[i]); j++ {
+			fmt.Println("")
 			fmt.Printf("%-12s", worldMap.Grid[i][j].CellType)
+			entities := worldMap.Grid[i][j].CellEntities
+			if len(entities) == 0 {
+				continue
+			} else {
+				for k, e := range entities {
+					if k > 0 {
+						fmt.Printf(", ")
+					}
+					fmt.Printf("%s", e.Name)
+				}
+			}
+
 		}
 		fmt.Println()
 	}
