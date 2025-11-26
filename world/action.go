@@ -18,23 +18,31 @@ func (e *Entity) needComparison(needType string) bool {
 	return need.Current < need.Threshold
 }
 
-/*
-	func (e *Entity) locateNeed(needType string, cell *Cell) {
-		need, exists := e.Needs[needType]
-		if !exists {
-			return
-		}
-
-		//need to create a map[string]cell.CellType mapping. I need mappings and data connectionms
-
-		switch cell.CellType {
-		case "PLAINS":
-			//go to!
-			//Will fix this later
-		}
+func (e *Entity) locateNeed(needType string, cell *Cell, worldMap *WorldMap) {
+	need, exists := e.Needs[needType]
+	if !exists {
+		return
+	}
+	needDict := worldMap.ResouceTerrainDict.ResourceDictionary
+	terrainTypeHolder := needDict[needType]
+	/*
+		1. get current postion of the entity
+		2. determine the terrain types surrounding this position
+		3. go to that terrain type depending on need
+	*/
+	currentPosX := e.Position.XPos
+	currentPosY := e.Position.YPos
 
 }
-*/
+
+func (worldMap *WorldMap) GetNeighbors(xPos int, yPos int, terrainType bool) bool {
+
+	possible_values := [8]Vec2{{0, 1}, {0, -1}, {1, 1}, {1, -1}, {1, 0}, {1, 1}, {-1, 0}, {-1, -1}} //for loop through these
+	//if terrain type matches then return else continue
+	//if no terrain type lets change this to bool we return false
+
+}
+
 func (e *Entity) ActOrchestrator() {
 	foodBool := e.needComparison("food")
 	shelterBool := e.needComparison("shelter")

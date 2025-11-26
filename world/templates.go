@@ -71,7 +71,6 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 	return out, nil
 }
 
-// SpawnEntityFromTemplate creates a new Entity instance from a template
 func SpawnEntityFromTemplate(template EntityTemplate, pos Vec2, id string) *Entity {
 	entity := &Entity{
 		Name:     id,

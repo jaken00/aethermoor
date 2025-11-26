@@ -13,3 +13,4 @@ Once we hit priority 1 -> go to priority 2..3.. etc
 if no priorities go home! 
 THen we tick Shelter. We may need to edit shelter beuase it shouldnt havbe a consume rate and is technically not a "NEED" but we need extra logic for reproduction so that rabbits will reproduce
 as well as wolves die off if they cant find food
+we need to do a death check before we do 
