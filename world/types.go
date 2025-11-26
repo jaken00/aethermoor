@@ -21,6 +21,10 @@ type ResourceEntry struct {
 	RegenRate float64 //does this regen amount
 }
 
+type ResourceTerrainMapping struct {
+	ResourceDictionary map[string][]string
+}
+
 /*
 	Will need to add a type filter to NeedEntry. 1. food -> so get all of the food types 2. Shelter -> so they go back home after hunger is fulfilled 2. Pro? so they go to do
 	food before shelter? This will later expand into havng need for renown / quests etc

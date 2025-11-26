@@ -12,9 +12,10 @@ type Cell struct {
 }
 
 type WorldMap struct {
-	Grid  [][]Cell
-	X_len int
-	Y_len int
+	Grid               [][]Cell
+	X_len              int
+	Y_len              int
+	ResouceTerrainDict *ResourceTerrainMapping
 }
 
 func randomInt(generationMax int) int {
@@ -39,6 +40,23 @@ func entityCellTypeGeneration(cellType string) string {
 	}
 
 	return "none"
+
+}
+
+func setTerrainResourceDictionary() *ResourceTerrainMapping {
+	var mapping ResourceTerrainMapping
+	t_dict := map[string][]string{
+		"GRASS": {"RIVER", "GRASSLAND"},
+		"MEAT":  {"PLAINS"},
+	}
+	mapping.ResourceDictionary = t_dict
+	return &mapping
+}
+
+func (worldMap *WorldMap) GetTerrainResource(terrainType string) []string {
+	resourceDict := worldMap.ResouceTerrainDict
+
+	return resourceDict.ResourceDictionary[terrainType]
 
 }
 
@@ -117,6 +135,7 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 		}
 	}
 	worldMap.Grid = grid
+	worldMap.ResouceTerrainDict = setTerrainResourceDictionary()
 	return &worldMap
 }
 
