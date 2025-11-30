@@ -52,7 +52,7 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 
 		for _, rn := range r.Needs {
 			need := &NeedEntry{
-				Resource:    rn.Resource,
+				Resource:    ResourceType(rn.Resource),
 				Threshold:   rn.Threshhold,
 				Capacity:    rn.Capacity,
 				ConsumeRate: rn.ConsumeRate,

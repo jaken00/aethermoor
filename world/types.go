@@ -1,5 +1,29 @@
 package world
 
+type TerrainType string
+type ResourceType string
+type NeedType string
+
+const (
+	TerrainPlains    TerrainType = "PLAINS"
+	TerrainWoods     TerrainType = "WOODS"
+	TerrainMountain  TerrainType = "MOUNTAIN"
+	TerrainRiver     TerrainType = "RIVER"
+	TerrainCave      TerrainType = "CAVE"
+	TerrainGrassland TerrainType = "GRASSLAND"
+)
+
+const (
+	ResourceGrass         ResourceType = "GRASS"
+	ResourceMeat          ResourceType = "MEAT"
+	ResourceCarnivoreMeat ResourceType = "CARNIVOREMEAT"
+)
+
+const (
+	NeedFood    NeedType = "FOOD"
+	NeedShelter NeedType = "SHELTER"
+)
+
 type Vec2 struct {
 	XPos int
 	YPos int
@@ -15,7 +39,7 @@ type Entity struct {
 	Aversions    []AversionEntry
 }
 type ResourceEntry struct {
-	Type      string
+	Type      ResourceType
 	Current   float64 //Current acoumt
 	Max       float64 // Max amount
 	RegenRate float64 //does this regen amount
@@ -26,7 +50,8 @@ type ResourceTerrainMapping struct {
 }
 
 type NeedEntry struct {
-	Resource    string //this maps to type of Resource Entry
+	Resource    ResourceType
+	Kind        NeedType
 	Type        string
 	Priority    int
 	Threshold   float64 // when we start looking for this resource

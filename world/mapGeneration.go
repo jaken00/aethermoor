@@ -3,44 +3,47 @@ package world
 import (
 	"fmt"
 	"math/rand"
-	"time"
 )
 
+const TerrainUnknown TerrainType = "TO_INIT"
+
 type Cell struct {
-	CellType     string
+	CellType     TerrainType
 	CellEntities []*Entity
 }
 
-type WorldMap struct {
+type World struct {
 	Grid               [][]Cell
-	X_len              int
-	Y_len              int
+	X_len, Y_len       int
 	ResouceTerrainDict *ResourceTerrainMapping
+	Entities           map[string]*Entity
+	CellEntities       map[Vec2][]string
 }
 
 func randomInt(generationMax int) int {
-	rand.Seed(time.Now().UnixNano())
+	if generationMax <= 0 {
+		return 0
+	}
 	return rand.Intn(generationMax)
 }
 
-func entityCellTypeGeneration(cellType string) string {
+func entityCellTypeGeneration(cellType TerrainType) string {
 	switch cellType {
-	case "PLAINS":
+	case TerrainPlains:
 		return "rabbit"
-	case "WOODS":
+	case TerrainWoods:
 		return "wolf"
-	case "MOUNTAIN":
+	case TerrainMountain:
 		return "wolf"
-	case "RIVER":
+	case TerrainRiver:
 		return "grass"
-	case "CAVE":
+	case TerrainCave:
 		return "wolf"
-	case "GRASSLAND":
+	case TerrainGrassland:
 		return "grass"
+	default:
+		return "none"
 	}
-
-	return "none"
-
 }
 
 func setTerrainResourceDictionary() *ResourceTerrainMapping {
@@ -53,75 +56,84 @@ func setTerrainResourceDictionary() *ResourceTerrainMapping {
 	return &mapping
 }
 
-func (worldMap *WorldMap) GetTerrainResource(terrainType string) []string {
-	resourceDict := worldMap.ResouceTerrainDict
-
-	return resourceDict.ResourceDictionary[terrainType]
-
+func (worldMap *World) GetTerrainResource(resource ResourceType) []string {
+	if worldMap == nil || worldMap.ResouceTerrainDict == nil {
+		return nil
+	}
+	return worldMap.ResouceTerrainDict.ResourceDictionary[string(resource)]
 }
 
-func entityGenerationPerCellCount(cellType string) int {
+func entityGenerationPerCellCount(cellType TerrainType) int {
 
-	//switch statement + random gen bounds for entites that spawn iwthin the certain entity zones
 	switch cellType {
-	case "PLAINS":
+	case TerrainPlains:
 		return randomInt(3)
-	case "WOODS":
+	case TerrainWoods:
 		return randomInt(1)
-	case "MOUNTAIN":
+	case TerrainMountain:
 		return randomInt(4)
-	case "RIVER":
+	case TerrainRiver:
 		return randomInt(4)
-	case "CAVE":
+	case TerrainCave:
 		return randomInt(4)
-	case "GRASSLAND":
+	case TerrainGrassland:
 		return randomInt(4)
+	default:
+		return 0
 	}
-
-	return 0
 }
 
 func (cell *Cell) initEntities(position Vec2, templates map[string]EntityTemplate) {
 	numEntities := entityGenerationPerCellCount(cell.CellType)
-	typeEntity := entityCellTypeGeneration(cell.CellType)
-	cell.CellEntities = make([]*Entity, numEntities)
+	cell.CellEntities = make([]*Entity, 0, numEntities)
+
+	entityTypeKey := entityCellTypeGeneration(cell.CellType)
+	if entityTypeKey == "none" {
+		return
+	}
 
 	for i := 0; i < numEntities; i++ {
-		rabbitTemplate := templates[typeEntity]
-		entityID := fmt.Sprintf("%s_%d", typeEntity, i)
-		cell.CellEntities[i] = SpawnEntityFromTemplate(rabbitTemplate, position, entityID)
+		tmpl, ok := templates[entityTypeKey]
+		if !ok {
+			continue
+		}
+		entityID := fmt.Sprintf("%s_%d_%d_%d", entityTypeKey, position.XPos, position.YPos, i)
+		newEntity := SpawnEntityFromTemplate(tmpl, position, entityID)
+		cell.CellEntities = append(cell.CellEntities, newEntity)
 	}
 }
 
-func getRandomCell() string {
-	celltypes := [...]string{"PLAINS", "WOODS", "MOUNTAIN", "RIVER", "CAVE", "GRASSLAND"}
-
+func getRandomCell() TerrainType {
+	celltypes := []TerrainType{
+		TerrainPlains, TerrainWoods, TerrainMountain,
+		TerrainRiver, TerrainCave, TerrainGrassland,
+	}
 	selection := celltypes[rand.Intn(len(celltypes))]
-
 	return selection
 }
 
 func (cell *Cell) populateCellType() {
-	if cell.CellType != "TO_INIT" {
+	if cell.CellType != TerrainUnknown {
 		return
 	}
 	cell.CellType = getRandomCell()
 
 }
 
-func GenerateWorld(x_length int, y_length int) *WorldMap {
+func GenerateWorld(x_length int, y_length int) *World {
 
-	var worldMap WorldMap
+	var worldMap World
 	var currentPosition Vec2
 	worldMap.X_len = x_length
 	worldMap.Y_len = y_length
 	grid := make([][]Cell, y_length)
 	templates, _ := LoadTemplates("template.json")
+	worldMap.Entities = make(map[string]*Entity)
+	worldMap.CellEntities = make(map[Vec2][]string)
 
 	for i := 0; i < x_length; i++ {
 		grid[i] = make([]Cell, x_length)
 		for j := 0; j < y_length; j++ {
-
 			grid[i][j] = Cell{
 				CellType:     "TO_INIT", //IF TYPE == TO_INIT GENERATE
 				CellEntities: nil,
@@ -132,6 +144,12 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 			currentPosition.YPos = j
 			grid[i][j].initEntities(currentPosition, templates)
 
+			for _, e := range grid[i][j].CellEntities {
+				worldMap.Entities[e.Name] = e
+				pos := Vec2{XPos: i, YPos: j}
+				worldMap.CellEntities[pos] = append(worldMap.CellEntities[pos], e.Name)
+			}
+
 		}
 	}
 	worldMap.Grid = grid
@@ -139,7 +157,7 @@ func GenerateWorld(x_length int, y_length int) *WorldMap {
 	return &worldMap
 }
 
-func (worldMap *WorldMap) PrintWorldMap() {
+func (worldMap *World) PrintWorldMap() {
 
 	for i := 0; i < len(worldMap.Grid); i++ {
 		for j := 0; j < len(worldMap.Grid[i]); j++ {
