@@ -33,7 +33,7 @@ type Entity struct {
 	Position     *Vec2
 	Alive        bool
 	Produces     []ResourceEntry
-	Needs        map[string]*NeedEntry
+	Needs        map[NeedType]*NeedEntry
 	ShelterPrefs []string
 	Home         *Vec2
 	Aversions    []AversionEntry

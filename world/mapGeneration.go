@@ -122,20 +122,27 @@ func (cell *Cell) populateCellType() {
 
 func GenerateWorld(x_length int, y_length int) *World {
 
+	// seed RNG once here (deterministic runs can seed with a fixed value)
+	rand.Seed(time.Now().UnixNano())
+
 	var worldMap World
 	var currentPosition Vec2
 	worldMap.X_len = x_length
 	worldMap.Y_len = y_length
-	grid := make([][]Cell, y_length)
+
+	// allocate rows = x_length, columns = y_length (so grid[x][y])
+	grid := make([][]Cell, x_length)
+
 	templates, _ := LoadTemplates("template.json")
 	worldMap.Entities = make(map[string]*Entity)
 	worldMap.CellEntities = make(map[Vec2][]string)
 
 	for i := 0; i < x_length; i++ {
-		grid[i] = make([]Cell, x_length)
+		grid[i] = make([]Cell, y_length)
 		for j := 0; j < y_length; j++ {
+			// initialize default cell
 			grid[i][j] = Cell{
-				CellType:     "TO_INIT", //IF TYPE == TO_INIT GENERATE
+				CellType:     TerrainUnknown,
 				CellEntities: nil,
 			}
 			grid[i][j].populateCellType()
@@ -144,12 +151,16 @@ func GenerateWorld(x_length int, y_length int) *World {
 			currentPosition.YPos = j
 			grid[i][j].initEntities(currentPosition, templates)
 
+			// register entities into world-level registries
 			for _, e := range grid[i][j].CellEntities {
+				if e == nil {
+					continue
+				}
+				// prefer to keep the entity pointer in the global entity map
 				worldMap.Entities[e.Name] = e
 				pos := Vec2{XPos: i, YPos: j}
 				worldMap.CellEntities[pos] = append(worldMap.CellEntities[pos], e.Name)
 			}
-
 		}
 	}
 	worldMap.Grid = grid
@@ -158,23 +169,20 @@ func GenerateWorld(x_length int, y_length int) *World {
 }
 
 func (worldMap *World) PrintWorldMap() {
-
 	for i := 0; i < len(worldMap.Grid); i++ {
 		for j := 0; j < len(worldMap.Grid[i]); j++ {
 			fmt.Println("")
-			fmt.Printf("%-12s", worldMap.Grid[i][j].CellType)
+			fmt.Printf("%-12s", string(worldMap.Grid[i][j].CellType))
 			entities := worldMap.Grid[i][j].CellEntities
 			if len(entities) == 0 {
 				continue
-			} else {
-				for k, e := range entities {
-					if k > 0 {
-						fmt.Printf(", ")
-					}
-					fmt.Printf("%s", e.Name)
-				}
 			}
-
+			for k, e := range entities {
+				if k > 0 {
+					fmt.Printf(", ")
+				}
+				fmt.Printf("%s", e.Name)
+			}
 		}
 		fmt.Println()
 	}
