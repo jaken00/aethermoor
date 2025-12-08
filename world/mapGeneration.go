@@ -123,7 +123,6 @@ func (cell *Cell) populateCellType() {
 func GenerateWorld(x_length int, y_length int) *World {
 
 	// seed RNG once here (deterministic runs can seed with a fixed value)
-	rand.Seed(time.Now().UnixNano())
 
 	var worldMap World
 	var currentPosition Vec2

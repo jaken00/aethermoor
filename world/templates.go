@@ -7,6 +7,7 @@ import (
 
 type rawNeedEntry struct {
 	Resource    string  `json:"resource"`
+	Kind        string  `json:"kind"`
 	Threshhold  float64 `json:"threshhold"`
 	Capacity    float64 `json:"capacity"`
 	ConsumeRate float64 `json:"ConsumeRate"`
@@ -24,7 +25,7 @@ type rawTemplateEntry struct {
 type EntityTemplate struct {
 	TemplateName string
 	Produces     []ResourceEntry
-	Needs        map[string]*NeedEntry
+	Needs        map[NeedType]*NeedEntry
 	ShelterPrefs []string
 	Aversions    []AversionEntry
 }
@@ -47,18 +48,19 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 			TemplateName: name,
 			Produces:     r.Produces,
 			ShelterPrefs: r.ShelterPrefs,
-			Needs:        make(map[string]*NeedEntry),
+			Needs:        make(map[NeedType]*NeedEntry),
 		}
 
 		for _, rn := range r.Needs {
 			need := &NeedEntry{
 				Resource:    ResourceType(rn.Resource),
+				Kind:        NeedType(rn.Kind),
 				Threshold:   rn.Threshhold,
 				Capacity:    rn.Capacity,
 				ConsumeRate: rn.ConsumeRate,
 				MinInterest: rn.MinInterest,
 			}
-			template.Needs[rn.Resource] = need
+			template.Needs[NeedType(rn.Kind)] = need
 		}
 
 		for _, a := range r.Aversions {
@@ -82,7 +84,7 @@ func SpawnEntityFromTemplate(template EntityTemplate, pos Vec2, id string) *Enti
 	entity.Produces = make([]ResourceEntry, len(template.Produces))
 	copy(entity.Produces, template.Produces)
 
-	entity.Needs = make(map[string]*NeedEntry)
+	entity.Needs = make(map[NeedType]*NeedEntry)
 	for key, need := range template.Needs {
 		needCopy := *need
 		entity.Needs[key] = &needCopy

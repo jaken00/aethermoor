@@ -4,7 +4,7 @@ import "fmt"
 
 func tickNeed(entity *Entity) {
 
-	for _, need := range entity.Needs { // this loops through the map and ticks all of them down
+	for _, need := range entity.Needs {
 
 		need.Current -= 1
 		if need.Current >= 0 {
