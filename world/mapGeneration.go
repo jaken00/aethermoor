@@ -17,7 +17,7 @@ type World struct {
 	X_len, Y_len       int
 	ResouceTerrainDict *ResourceTerrainMapping
 	Entities           map[string]*Entity
-	CellEntities       map[Vec2][]string
+	CellEntities       map[Vec2][]string //maybe instead of returning a string we return the actual entity? or at the least e.name?
 }
 
 func randomInt(generationMax int) int {
