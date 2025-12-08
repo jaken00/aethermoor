@@ -32,6 +32,10 @@ func getLowestNeedtype(e *Entity) NeedType {
 	return currentLowestNeedType
 }
 
+func (e *Entity) MoveEntity() {
+	//Call both get lowest type and get nearest cell resource
+}
+
 func getNearestCellResource(current_position Vec2, worldMap World, resourceName ResourceType) Vec2 {
 	directions := [8]Vec2{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
 

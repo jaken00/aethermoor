@@ -11,6 +11,7 @@ func (worldMap *World) TickWorld() {
 			} else {
 				for _, entity := range currentGrid.CellEntities { // loop through entities
 					tickNeed(entity)
+					getNearestCellResource(*entity.Position, *worldMap, ResourceType(getLowestNeedtype(entity)))
 				}
 			}
 		}
