@@ -96,5 +96,8 @@ func getNearestCellResource(current_position Vec2, worldMap World, resourceName 
 	return Vec2{-1, -1} // not found
 }
 
-//Function now that needs to check the current cell and eat return a bool if able to eat that detemrines the
-//outcome if we need to call the MoveEntity
+func (e *Entity) CheckCurrentCell() bool {
+
+	return false // if false go find need here we need to also edit the resource entry of that current cell
+	//Should prob create a resource manager
+}
