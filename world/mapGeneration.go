@@ -12,6 +12,7 @@ type Cell struct {
 	CellEntities []*Entity
 }
 
+// Might need to do a global counter to increment entities or do a UUID
 type World struct {
 	Grid               [][]Cell
 	X_len, Y_len       int

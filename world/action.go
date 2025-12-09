@@ -32,8 +32,35 @@ func getLowestNeedtype(e *Entity) NeedType {
 	return currentLowestNeedType
 }
 
-func (e *Entity) MoveEntity() {
-	//Call both get lowest type and get nearest cell resource
+func (e *Entity) MoveEntity(worldMap *World) {
+	lowestNeedType := getLowestNeedtype(e)
+	prev_position := *e.Position
+	positionToMove := getNearestCellResource(*e.Position, *worldMap, ResourceType(lowestNeedType))
+
+	oldCell := &worldMap.Grid[prev_position.XPos][prev_position.YPos]
+
+	for i, entity := range oldCell.CellEntities {
+		if entity.Name == e.Name {
+			oldCell.CellEntities = append(oldCell.CellEntities[:i], oldCell.CellEntities[i+1:]...)
+			break
+		}
+	}
+	oldList := worldMap.CellEntities[prev_position]
+
+	for i, name := range oldList {
+		if name == e.Name {
+			worldMap.CellEntities[prev_position] = append(oldList[:i], oldList[i+1:]...)
+			break
+		}
+	}
+
+	e.Position = &positionToMove
+
+	newCell := &worldMap.Grid[positionToMove.XPos][positionToMove.YPos]
+	newCell.CellEntities = append(newCell.CellEntities, e)
+
+	worldMap.CellEntities[positionToMove] = append(worldMap.CellEntities[positionToMove], e.Name)
+
 }
 
 func getNearestCellResource(current_position Vec2, worldMap World, resourceName ResourceType) Vec2 {
@@ -69,7 +96,5 @@ func getNearestCellResource(current_position Vec2, worldMap World, resourceName 
 	return Vec2{-1, -1} // not found
 }
 
-//need make generalized function that takes in an entity current position (so maybe just a Vec2) and get the current location of the need of that cell. so goes through the 8 cells touching it and goes to
-//find the need thjta the currentNeedType returns. -> consume until capacity move on
-//first we do a check if current cell has grass or food or wahtevber -> then we move on!
-//we need to also implement health attack defesne stats in a combat file as well
+//Function now that needs to check the current cell and eat return a bool if able to eat that detemrines the
+//outcome if we need to call the MoveEntity

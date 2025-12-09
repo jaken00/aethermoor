@@ -1,5 +1,6 @@
 package world
 
+//Now we need a function to call TickWorld in the Main function
 func (worldMap *World) TickWorld() {
 
 	for i := 0; i < worldMap.X_len; i++ {
@@ -11,7 +12,7 @@ func (worldMap *World) TickWorld() {
 			} else {
 				for _, entity := range currentGrid.CellEntities { // loop through entities
 					tickNeed(entity)
-					getNearestCellResource(*entity.Position, *worldMap, ResourceType(getLowestNeedtype(entity)))
+					entity.MoveEntity(worldMap)
 				}
 			}
 		}
