@@ -12,10 +12,14 @@ func (worldMap *World) TickWorld() {
 			} else {
 				for _, entity := range currentGrid.CellEntities { // loop through entities
 					tickNeed(entity)
-					entity.MoveEntity(worldMap)
+					if !entity.CheckCurrentCell(worldMap, ResourceType(getLowestNeedtype(entity))) {
+						entity.MoveEntity(worldMap) //Move if we cant find out lowest need type at the current location
+					}
 				}
 			}
 		}
 	}
 
 }
+
+//I also want to remvoe the shelter need. Shelter will just be gained from going home -> This allows for lcoations to grow and will be easier to build villages off of

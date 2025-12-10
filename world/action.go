@@ -35,7 +35,7 @@ func getLowestNeedtype(e *Entity) NeedType {
 func (e *Entity) MoveEntity(worldMap *World) {
 	lowestNeedType := getLowestNeedtype(e)
 	prev_position := *e.Position
-	positionToMove := getNearestCellResource(*e.Position, *worldMap, ResourceType(lowestNeedType))
+	positionToMove := getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
 
 	oldCell := &worldMap.Grid[prev_position.XPos][prev_position.YPos]
 
@@ -63,7 +63,7 @@ func (e *Entity) MoveEntity(worldMap *World) {
 
 }
 
-func getNearestCellResource(current_position Vec2, worldMap World, resourceName ResourceType) Vec2 {
+func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType) Vec2 {
 	directions := [8]Vec2{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
 
 	for _, dir := range directions {
@@ -96,8 +96,20 @@ func getNearestCellResource(current_position Vec2, worldMap World, resourceName 
 	return Vec2{-1, -1} // not found
 }
 
-func (e *Entity) CheckCurrentCell() bool {
+func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) bool {
 
-	return false // if false go find need here we need to also edit the resource entry of that current cell
-	//Should prob create a resource manager
+	current_pos := e.Position
+	current_cell := worldMap.Grid[current_pos.XPos][current_pos.YPos]
+
+	for _, potential_entities := range current_cell.CellEntities {
+		for _, produces := range potential_entities.Produces {
+			if produces.Type == resourceNeeded {
+				produces.Current--
+				return true
+			}
+		}
+	}
+
+	return false
+
 }
