@@ -1,6 +1,9 @@
 package world
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func tickNeed(entity *Entity) {
 
@@ -13,7 +16,7 @@ func tickNeed(entity *Entity) {
 	}
 }
 
-//This gets the current lowest need type when deciding action | Returns: NEEDTYPE
+// This gets the current lowest need type when deciding action | Returns: NEEDTYPE
 func getLowestNeedtype(e *Entity) NeedType {
 	lowest := 50.0
 	var current float64
@@ -32,10 +35,41 @@ func getLowestNeedtype(e *Entity) NeedType {
 	return currentLowestNeedType
 }
 
+func getRandomAdjacentPosition(pos Vec2, worldMap *World) Vec2 {
+	directions := []struct{ dx, dy int }{
+		{-1, 0}, {1, 0}, {0, -1}, {0, 1}, // cardinal
+		{-1, -1}, {-1, 1}, {1, -1}, {1, 1}, // diagonal
+	}
+
+	validPositions := []Vec2{}
+
+	for _, dir := range directions {
+		newX := pos.XPos + dir.dx
+		newY := pos.YPos + dir.dy
+
+		if newX >= 0 && newX < len(worldMap.Grid) &&
+			newY >= 0 && newY < len(worldMap.Grid[0]) {
+			validPositions = append(validPositions, Vec2{XPos: newX, YPos: newY})
+		}
+	}
+
+	if len(validPositions) == 0 {
+		return pos
+	}
+
+	return validPositions[rand.Intn(len(validPositions))]
+}
+
 func (e *Entity) MoveEntity(worldMap *World) {
+
 	lowestNeedType := getLowestNeedtype(e)
 	prev_position := *e.Position
 	positionToMove := getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
+
+	// Move randomly if no resource found
+	if positionToMove.XPos < 0 || positionToMove.YPos < 0 {
+		positionToMove = getRandomAdjacentPosition(prev_position, worldMap)
+	}
 
 	oldCell := &worldMap.Grid[prev_position.XPos][prev_position.YPos]
 
@@ -60,7 +94,6 @@ func (e *Entity) MoveEntity(worldMap *World) {
 	newCell.CellEntities = append(newCell.CellEntities, e)
 
 	worldMap.CellEntities[positionToMove] = append(worldMap.CellEntities[positionToMove], e.Name)
-
 }
 
 func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType) Vec2 {
@@ -103,7 +136,7 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 
 	for _, potential_entities := range current_cell.CellEntities {
 		for _, produces := range potential_entities.Produces {
-			if produces.Type == resourceNeeded {
+			if produces.Type == resourceNeeded && produces.Current > 0 {
 				produces.Current--
 				return true
 			}

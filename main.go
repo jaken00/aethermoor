@@ -10,7 +10,6 @@ import (
 
 func main() {
 	worldmap := world.GenerateWorld(10, 10)
-	worldmap.PrintWorldMap()
 
 	scanner := bufio.NewScanner(os.Stdin)
 
