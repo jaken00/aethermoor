@@ -17,7 +17,12 @@ func (worldMap *World) TickWorld() {
 						//Add in tick grass here
 					}
 
-					tickNeed(entity)
+					entityDead := tickNeed(entity)
+
+					if entityDead {
+						Die(entity, worldMap)
+						break
+					}
 					if !entity.CheckCurrentCell(worldMap, ResourceType(getLowestNeedtype(entity))) {
 						entity.MoveEntity(worldMap) //Move if we cant find out lowest need type at the current location
 					}

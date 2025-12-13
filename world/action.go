@@ -1,19 +1,21 @@
 package world
 
 import (
-	"fmt"
 	"math/rand"
 )
 
-func tickNeed(entity *Entity) {
-
+func tickNeed(entity *Entity) bool {
+	var die bool
 	for _, need := range entity.Needs {
 
 		need.Current -= 1
-		if need.Current >= 0 {
-			fmt.Println("Need kill entity")
+		if need.Current <= 0 {
+			die = true
+			return die
 		}
 	}
+	die = false
+	return die
 }
 
 // This gets the current lowest need type when deciding action | Returns: NEEDTYPE

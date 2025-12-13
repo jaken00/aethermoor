@@ -3,6 +3,7 @@ package world
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 )
 
 const TerrainUnknown TerrainType = "TO_INIT"
@@ -169,21 +170,115 @@ func GenerateWorld(x_length int, y_length int) *World {
 }
 
 func (worldMap *World) PrintWorldMap() {
-	for i := 0; i < len(worldMap.Grid); i++ {
-		for j := 0; j < len(worldMap.Grid[i]); j++ {
-			fmt.Println("")
-			fmt.Printf("%-12s", string(worldMap.Grid[i][j].CellType))
-			entities := worldMap.Grid[i][j].CellEntities
-			if len(entities) == 0 {
-				continue
-			}
-			for k, e := range entities {
-				if k > 0 {
-					fmt.Printf(", ")
+	// Print separator and header
+	fmt.Println("\n" + strings.Repeat("=", 60))
+	fmt.Println("=== WORLD MAP ===")
+	fmt.Println("Terrain: P=Plains, W=Woods, M=Mountain, R=River, C=Cave, G=Grassland")
+	fmt.Println("Entities: r=rabbit, w=wolf, g=grass (numbers show count if >1)")
+	fmt.Println()
+	
+	// Print column numbers header
+	fmt.Print("   ")
+	for j := 0; j < worldMap.Y_len; j++ {
+		if j < 10 {
+			fmt.Printf(" %d", j)
+		} else {
+			fmt.Printf("%d", j)
+		}
+	}
+	fmt.Println()
+	
+	// Print grid with row numbers
+	for i := 0; i < worldMap.X_len; i++ {
+		// Row number
+		if i < 10 {
+			fmt.Printf("%d  ", i)
+		} else {
+			fmt.Printf("%d ", i)
+		}
+		
+		for j := 0; j < worldMap.Y_len; j++ {
+			cell := worldMap.Grid[i][j]
+			
+			// Get terrain symbol
+			terrainSym := getTerrainSymbol(cell.CellType)
+			
+			// Build entity string
+			entityStr := ""
+			if len(cell.CellEntities) > 0 {
+				// Count entities by type
+				entityCounts := make(map[string]int)
+				for _, e := range cell.CellEntities {
+					if e != nil {
+						// Extract entity type from name (e.g., "rabbit_0_0_1" -> "rabbit")
+						parts := strings.Split(e.Name, "_")
+						if len(parts) > 0 {
+							entityType := parts[0]
+							entityCounts[entityType]++
+						}
+					}
 				}
-				fmt.Printf("%s", e.Name)
+				
+				// Build compact entity representation
+				var entityParts []string
+				if count := entityCounts["rabbit"]; count > 0 {
+					if count == 1 {
+						entityParts = append(entityParts, "r")
+					} else {
+						entityParts = append(entityParts, fmt.Sprintf("r%d", count))
+					}
+				}
+				if count := entityCounts["wolf"]; count > 0 {
+					if count == 1 {
+						entityParts = append(entityParts, "w")
+					} else {
+						entityParts = append(entityParts, fmt.Sprintf("w%d", count))
+					}
+				}
+				if count := entityCounts["grass"]; count > 0 {
+					if count == 1 {
+						entityParts = append(entityParts, "g")
+					} else {
+						entityParts = append(entityParts, fmt.Sprintf("g%d", count))
+					}
+				}
+				entityStr = strings.Join(entityParts, "")
+			}
+			
+			// Print cell: [TerrainSymbol][Entities] (padded to 4 chars)
+			if entityStr != "" {
+				fmt.Printf("%s%s", terrainSym, entityStr)
+				// Pad to 4 characters for alignment
+				totalLen := len(terrainSym) + len(entityStr)
+				for totalLen < 4 {
+					fmt.Print(" ")
+					totalLen++
+				}
+			} else {
+				fmt.Printf("%s   ", terrainSym)
 			}
 		}
 		fmt.Println()
+	}
+	fmt.Println()
+}
+
+// getTerrainSymbol returns a single character symbol for terrain type
+func getTerrainSymbol(terrain TerrainType) string {
+	switch terrain {
+	case TerrainPlains:
+		return "P"
+	case TerrainWoods:
+		return "W"
+	case TerrainMountain:
+		return "M"
+	case TerrainRiver:
+		return "R"
+	case TerrainCave:
+		return "C"
+	case TerrainGrassland:
+		return "G"
+	default:
+		return "?"
 	}
 }
