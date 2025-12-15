@@ -1,12 +1,10 @@
 package world
 
 import (
-	"fmt"
 	"math/rand"
 )
 
 func tickNeed(entity *Entity) bool {
-	fmt.Printf("DEBUG: tickNeed called on %s\n", entity.Name)
 	var die bool
 	for _, need := range entity.Needs {
 
@@ -67,6 +65,15 @@ func getRandomAdjacentPosition(pos Vec2, worldMap *World) Vec2 {
 func (e *Entity) MoveEntity(worldMap *World) {
 
 	lowestNeedType := getLowestNeedtype(e)
+
+	if lowestNeedType == NeedShelter {
+		//dist = sqrt((x2-x1)^2 + (y2-y1)^2)
+		//get distance
+		//Move towards distance
+		//Set movement flag
+		//Need to make a new type of "SETTINGS" under the entitiy -> Stats and Currently Doing
+	}
+
 	prev_position := *e.Position
 	positionToMove := getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
 

@@ -102,6 +102,7 @@ func (cell *Cell) initEntities(position Vec2, templates map[string]EntityTemplat
 		entityID := fmt.Sprintf("%s_%d_%d_%d", entityTypeKey, position.XPos, position.YPos, i)
 		newEntity := SpawnEntityFromTemplate(tmpl, position, entityID)
 		cell.CellEntities = append(cell.CellEntities, newEntity)
+		newEntity.Home = &Vec2{position.XPos, position.YPos}
 	}
 }
 

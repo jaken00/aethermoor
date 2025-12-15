@@ -3,6 +3,7 @@ package world
 type TerrainType string
 type ResourceType string
 type NeedType string
+type CurrentActivity string
 
 const (
 	TerrainPlains    TerrainType = "PLAINS"
@@ -11,6 +12,10 @@ const (
 	TerrainRiver     TerrainType = "RIVER"
 	TerrainCave      TerrainType = "CAVE"
 	TerrainGrassland TerrainType = "GRASSLAND"
+)
+const (
+	HuntingActivity CurrentActivity = "FOOD SEARCH"
+	ShelterActivity CurrentActivity = "HOME SEARC"
 )
 
 const (
@@ -29,14 +34,15 @@ type Vec2 struct {
 	YPos int
 }
 type Entity struct {
-	Name         string
-	Position     *Vec2
-	Alive        bool
-	Produces     []ResourceEntry
-	Needs        map[NeedType]*NeedEntry
-	ShelterPrefs []string
-	Home         *Vec2
-	Aversions    []AversionEntry
+	Name           string
+	Position       *Vec2
+	Alive          bool
+	Produces       []ResourceEntry
+	Needs          map[NeedType]*NeedEntry
+	ShelterPrefs   []string
+	Home           *Vec2
+	Aversions      []AversionEntry
+	EntitySettings []EntitySettingsEntry
 }
 type ResourceEntry struct {
 	Type      ResourceType
@@ -47,6 +53,11 @@ type ResourceEntry struct {
 
 type ResourceTerrainMapping struct {
 	ResourceDictionary map[string][]string
+}
+type EntitySettingsEntry struct {
+	Health   int
+	Attack   int
+	Activity CurrentActivity
 }
 
 type NeedEntry struct {
