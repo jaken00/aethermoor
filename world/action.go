@@ -1,10 +1,12 @@
 package world
 
 import (
+	"fmt"
 	"math/rand"
 )
 
 func tickNeed(entity *Entity) bool {
+	fmt.Printf("DEBUG: tickNeed called on %s\n", entity.Name)
 	var die bool
 	for _, need := range entity.Needs {
 
@@ -132,19 +134,27 @@ func getNearestCellResource(current_position Vec2, worldMap *World, resourceName
 }
 
 func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) bool {
-
 	current_pos := e.Position
 	current_cell := worldMap.Grid[current_pos.XPos][current_pos.YPos]
 
 	for _, potential_entities := range current_cell.CellEntities {
-		for _, produces := range potential_entities.Produces {
-			if produces.Type == resourceNeeded && produces.Current > 0 {
-				produces.Current--
+		if potential_entities.Name == e.Name {
+			continue
+		}
+
+		for i := range potential_entities.Produces {
+			if potential_entities.Produces[i].Type == resourceNeeded && potential_entities.Produces[i].Current > 0 {
+				potential_entities.Produces[i].Current--
+
+				for _, need := range e.Needs {
+					if need.Resource == resourceNeeded {
+						need.Current++
+						break
+					}
+				}
 				return true
 			}
 		}
 	}
-
 	return false
-
 }

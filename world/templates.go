@@ -8,10 +8,10 @@ import (
 type rawNeedEntry struct {
 	Resource    string  `json:"resource"`
 	Kind        string  `json:"kind"`
-	Threshhold  float64 `json:"threshhold"`
-	Capacity    float64 `json:"capacity"`
-	ConsumeRate float64 `json:"ConsumeRate"`
-	MinInterest float64 `json:"MinInterest"`
+	Current     float64 `json:"current"`
+	Max         float64 `json:"max"`
+	Threshold   float64 `json:"threshold"`
+	ConsumeRate float64 `json:"consumeRate"`
 }
 
 type rawTemplateEntry struct {
@@ -55,10 +55,10 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 			need := &NeedEntry{
 				Resource:    ResourceType(rn.Resource),
 				Kind:        NeedType(rn.Kind),
-				Threshold:   rn.Threshhold,
-				Capacity:    rn.Capacity,
+				Current:     rn.Current,
+				Max:         rn.Max,
+				Threshold:   rn.Threshold,
 				ConsumeRate: rn.ConsumeRate,
-				MinInterest: rn.MinInterest,
 			}
 			template.Needs[NeedType(rn.Kind)] = need
 		}
@@ -83,6 +83,11 @@ func SpawnEntityFromTemplate(template EntityTemplate, pos Vec2, id string) *Enti
 	// Deep copy slices
 	entity.Produces = make([]ResourceEntry, len(template.Produces))
 	copy(entity.Produces, template.Produces)
+
+	// Initialize Current to Max for new entities
+	for i := range entity.Produces {
+		entity.Produces[i].Current = entity.Produces[i].Max
+	}
 
 	entity.Needs = make(map[NeedType]*NeedEntry)
 	for key, need := range template.Needs {

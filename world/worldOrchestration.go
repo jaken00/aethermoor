@@ -2,34 +2,41 @@ package world
 
 //Now we need a function to call TickWorld in the Main function
 func (worldMap *World) TickWorld() {
+	// Collect all unique entities first to avoid processing them multiple times
+	processedEntities := make(map[string]bool)
+	entitiesToProcess := []*Entity{}
 
 	for i := 0; i < worldMap.X_len; i++ {
 		for j := 0; j < worldMap.Y_len; j++ {
-			currentGrid := worldMap.Grid[i][j]
-
-			if len(currentGrid.CellEntities) == 0 {
-				continue
-			} else {
-				for _, entity := range currentGrid.CellEntities { // loop through entities
-					// Skip entities with no needs (like Grass)
-					if len(entity.Needs) == 0 {
-						continue
-						//Add in tick grass here
-					}
-
-					entityDead := tickNeed(entity)
-
-					if entityDead {
-						Die(entity, worldMap)
-						break
-					}
-					if !entity.CheckCurrentCell(worldMap, ResourceType(getLowestNeedtype(entity))) {
-						entity.MoveEntity(worldMap) //Move if we cant find out lowest need type at the current location
-					}
+			for _, entity := range worldMap.Grid[i][j].CellEntities {
+				if !processedEntities[entity.Name] {
+					processedEntities[entity.Name] = true
+					entitiesToProcess = append(entitiesToProcess, entity)
 				}
 			}
 		}
 	}
+
+	// Now process each entity exactly once
+	for _, entity := range entitiesToProcess {
+		if len(entity.Needs) == 0 {
+			continue
+			//Add in tick grass here
+			//Not tick grass needs to do a Check if replenished
+		}
+
+		entityDead := tickNeed(entity)
+
+		if entityDead {
+			Die(entity, worldMap)
+			continue
+		}
+
+		if !entity.CheckCurrentCell(worldMap, ResourceType(getLowestNeedtype(entity))) {
+			entity.MoveEntity(worldMap) //Move if we cant find out lowest need type at the current location
+		}
+	}
+
 	worldMap.PrintWorldMap()
 
 }

@@ -22,6 +22,7 @@ func main() {
 			break
 		} else if input == "n" {
 			worldmap.TickWorld() //ticks world forward
+			//worldmap.PrintEntityStatus()
 		}
 	}
 

@@ -1,7 +1,17 @@
 package world
 
+import "fmt"
+
 func Die(e *Entity, worldMap *World) {
-	println("ENTITY DEAD")
+	fmt.Printf(">>> ENTITY DIED: %s at position (%d, %d)\n", e.Name, e.Position.XPos, e.Position.YPos)
+	fmt.Println("    Final needs status:")
+
+	for needType, need := range e.Needs {
+		fmt.Printf("      %s (%s): %.2f/%.2f (threshold: %.2f)\n",
+			needType, need.Resource, need.Current, need.Max, need.Threshold)
+	}
+	fmt.Println("---------------------------")
+
 	entity_pos := *e.Position
 
 	oldCell := &worldMap.Grid[entity_pos.XPos][entity_pos.YPos]

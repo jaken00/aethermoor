@@ -176,7 +176,7 @@ func (worldMap *World) PrintWorldMap() {
 	fmt.Println("Terrain: P=Plains, W=Woods, M=Mountain, R=River, C=Cave, G=Grassland")
 	fmt.Println("Entities: r=rabbit, w=wolf, g=grass (numbers show count if >1)")
 	fmt.Println()
-	
+
 	// Print column numbers header
 	fmt.Print("   ")
 	for j := 0; j < worldMap.Y_len; j++ {
@@ -187,7 +187,7 @@ func (worldMap *World) PrintWorldMap() {
 		}
 	}
 	fmt.Println()
-	
+
 	// Print grid with row numbers
 	for i := 0; i < worldMap.X_len; i++ {
 		// Row number
@@ -196,13 +196,13 @@ func (worldMap *World) PrintWorldMap() {
 		} else {
 			fmt.Printf("%d ", i)
 		}
-		
+
 		for j := 0; j < worldMap.Y_len; j++ {
 			cell := worldMap.Grid[i][j]
-			
+
 			// Get terrain symbol
 			terrainSym := getTerrainSymbol(cell.CellType)
-			
+
 			// Build entity string
 			entityStr := ""
 			if len(cell.CellEntities) > 0 {
@@ -218,7 +218,7 @@ func (worldMap *World) PrintWorldMap() {
 						}
 					}
 				}
-				
+
 				// Build compact entity representation
 				var entityParts []string
 				if count := entityCounts["rabbit"]; count > 0 {
@@ -244,7 +244,7 @@ func (worldMap *World) PrintWorldMap() {
 				}
 				entityStr = strings.Join(entityParts, "")
 			}
-			
+
 			// Print cell: [TerrainSymbol][Entities] (padded to 4 chars)
 			if entityStr != "" {
 				fmt.Printf("%s%s", terrainSym, entityStr)
@@ -263,7 +263,6 @@ func (worldMap *World) PrintWorldMap() {
 	fmt.Println()
 }
 
-// getTerrainSymbol returns a single character symbol for terrain type
 func getTerrainSymbol(terrain TerrainType) string {
 	switch terrain {
 	case TerrainPlains:
@@ -281,4 +280,39 @@ func getTerrainSymbol(terrain TerrainType) string {
 	default:
 		return "?"
 	}
+}
+
+// TEMP PRINT FUNCTION
+func (worldMap *World) PrintEntityStatus() {
+	fmt.Println("\n" + strings.Repeat("=", 80))
+	fmt.Println("=== ENTITY STATUS ===")
+	fmt.Println(strings.Repeat("=", 80))
+
+	for i := 0; i < worldMap.X_len; i++ {
+		for j := 0; j < worldMap.Y_len; j++ {
+			cell := worldMap.Grid[i][j]
+
+			if len(cell.CellEntities) == 0 {
+				continue
+			}
+
+			for _, entity := range cell.CellEntities {
+				fmt.Printf("\nEntity: %s | Position: (%d, %d) | Alive: %t\n",
+					entity.Name, entity.Position.XPos, entity.Position.YPos, entity.Alive)
+
+				fmt.Println("  Produces:")
+				for _, prod := range entity.Produces {
+					fmt.Printf("    %s: %.2f/%.2f (regen: %.2f)\n",
+						prod.Type, prod.Current, prod.Max, prod.RegenRate)
+				}
+
+				fmt.Println("  Needs:")
+				for needType, need := range entity.Needs {
+					fmt.Printf("    %s (%s): %.2f/%.2f (threshold: %.2f, consume: %.2f)\n",
+						needType, need.Resource, need.Current, need.Max, need.Threshold, need.ConsumeRate)
+				}
+			}
+		}
+	}
+	fmt.Println(strings.Repeat("=", 80))
 }

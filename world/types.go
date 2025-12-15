@@ -52,13 +52,10 @@ type ResourceTerrainMapping struct {
 type NeedEntry struct {
 	Resource    ResourceType
 	Kind        NeedType
-	Type        string
-	Priority    int
+	Current     float64 // current satisfaction level
+	Max         float64 // maximum satisfaction level
 	Threshold   float64 // when we start looking for this resource
-	Current     float64
-	Capacity    float64
-	ConsumeRate float64
-	MinInterest float64 //ignores patches with certain amoutn of grass
+	ConsumeRate float64 // how fast this need depletes
 }
 type AversionEntry struct {
 	Resource  string  // flee from entities that produce this resource -> WOLF -> CARNIVOREMEAT the MEAT is descriptor of the production
