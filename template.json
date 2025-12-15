@@ -9,23 +9,26 @@
             {"resource": "SHELTER", "kind": "SHELTER", "current": 10, "max": 10, "threshold": 5, "consumeRate": 2}
         ],
         "shelterPrefs": ["PLAINS", "RIVER"],
-        "aversions": ["CARNIVOREMEAT"]
+        "aversions": ["CARNIVOREMEAT"],
+        "entity-settings": {"health" : 5, "attack": 1, "activity": "null"}
     },
     "wolf": 
     {
        "produces": [
-            {"type": "CARNIVOREMEAT", "max": 5, "regenRate": 0}
+            {"type": "CARNIVOREMEAT", "max": 8, "regenRate": 0}
         ],
         "needs": [
             {"resource": "MEAT", "kind": "FOOD", "current": 10, "max": 10, "threshold": 5, "consumeRate": 2}
         ],
         "shelterPrefs": ["MOUNTAIN", "CAVE"],
-        "aversions": ["CARNIVOREMEAT"] 
+        "aversions": ["CARNIVOREMEAT"],
+        "entity-settings": {"health" : 8, "attack": 3, "activity": "null"} 
     },
     "grass": 
     {
         "produces": [
             {"type": "GRASS", "max": 4, "regenRate": 5} 
-        ]
+        ],
+        "entity-settings": {"health" : 4, "attack": 0, "activity": null} 
     }
 }

@@ -15,7 +15,8 @@ const (
 )
 const (
 	HuntingActivity CurrentActivity = "FOOD SEARCH"
-	ShelterActivity CurrentActivity = "HOME SEARC"
+	ShelterActivity CurrentActivity = "HOME SEARCH"
+	NullActivity    CurrentActivity = "null"
 )
 
 const (
@@ -42,7 +43,7 @@ type Entity struct {
 	ShelterPrefs   []string
 	Home           *Vec2
 	Aversions      []AversionEntry
-	EntitySettings []EntitySettingsEntry
+	EntitySettings *EntitySettingsEntry
 }
 type ResourceEntry struct {
 	Type      ResourceType

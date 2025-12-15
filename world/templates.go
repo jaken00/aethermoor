@@ -14,20 +14,28 @@ type rawNeedEntry struct {
 	ConsumeRate float64 `json:"consumeRate"`
 }
 
+type rawEntitySettingsEntry struct {
+	Health   int    `json:"health"`
+	Attack   int    `json:"attack"`
+	Activity string `json:"activity"`
+}
+
 type rawTemplateEntry struct {
-	Produces     []ResourceEntry `json:"produces"`
-	Needs        []rawNeedEntry  `json:"needs"`
-	ShelterPrefs []string        `json:"shelterPrefs"`
-	Aversions    []string        `json:"aversions"`
+	Produces       []ResourceEntry        `json:"produces"`
+	Needs          []rawNeedEntry         `json:"needs"`
+	ShelterPrefs   []string               `json:"shelterPrefs"`
+	Aversions      []string               `json:"aversions"`
+	EntitySettings rawEntitySettingsEntry `json:"entity-settings"`
 }
 
 // EntityTemplate is the loaded template (not a live entity)
 type EntityTemplate struct {
-	TemplateName string
-	Produces     []ResourceEntry
-	Needs        map[NeedType]*NeedEntry
-	ShelterPrefs []string
-	Aversions    []AversionEntry
+	TemplateName   string
+	Produces       []ResourceEntry
+	Needs          map[NeedType]*NeedEntry
+	ShelterPrefs   []string
+	Aversions      []AversionEntry
+	EntitySettings rawEntitySettingsEntry
 }
 
 // LoadTemplates reads JSON and returns templates (not entities)
@@ -45,10 +53,11 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 	out := make(map[string]EntityTemplate)
 	for name, r := range raw {
 		template := EntityTemplate{
-			TemplateName: name,
-			Produces:     r.Produces,
-			ShelterPrefs: r.ShelterPrefs,
-			Needs:        make(map[NeedType]*NeedEntry),
+			TemplateName:   name,
+			Produces:       r.Produces,
+			ShelterPrefs:   r.ShelterPrefs,
+			Needs:          make(map[NeedType]*NeedEntry),
+			EntitySettings: r.EntitySettings,
 		}
 
 		for _, rn := range r.Needs {
@@ -100,6 +109,13 @@ func SpawnEntityFromTemplate(template EntityTemplate, pos Vec2, id string) *Enti
 
 	entity.Aversions = make([]AversionEntry, len(template.Aversions))
 	copy(entity.Aversions, template.Aversions)
+
+	// Copy entity settings
+	entity.EntitySettings = &EntitySettingsEntry{
+		Health:   template.EntitySettings.Health,
+		Attack:   template.EntitySettings.Attack,
+		Activity: CurrentActivity(template.EntitySettings.Activity),
+	}
 
 	return entity
 }
