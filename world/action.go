@@ -1,6 +1,7 @@
 package world
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -33,6 +34,13 @@ func getLowestNeedtype(e *Entity) NeedType {
 
 		}
 	}
+	//May need to add in logic to make sure that we FINISH the shelter hunting so doesnt get stuck in loop of looking for shelter and then dying
+	switch currentLowestNeedType {
+	case NeedFood:
+		e.EntitySettings.Activity = HuntingActivity
+	case NeedShelter:
+		e.EntitySettings.Activity = ShelterActivity
+	}
 
 	return currentLowestNeedType
 }
@@ -64,22 +72,36 @@ func getRandomAdjacentPosition(pos Vec2, worldMap *World) Vec2 {
 
 func (e *Entity) MoveEntity(worldMap *World) {
 
-	lowestNeedType := getLowestNeedtype(e)
-
-	if lowestNeedType == NeedShelter {
-		//dist = sqrt((x2-x1)^2 + (y2-y1)^2)
-		//get distance
-		//Move towards distance
-		//Set movement flag
-		//Need to make a new type of "SETTINGS" under the entitiy -> Stats and Currently Doing
-	}
-
+	var positionToMove Vec2
 	prev_position := *e.Position
-	positionToMove := getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
+	if e.EntitySettings.Activity == ShelterActivity {
+		dx := e.Position.XPos - e.Home.XPos
+		dy := e.Position.YPos - e.Home.YPos
 
-	// Move randomly if no resource found
-	if positionToMove.XPos < 0 || positionToMove.YPos < 0 {
-		positionToMove = getRandomAdjacentPosition(prev_position, worldMap)
+		moveX := 0
+		if dx > 1 {
+			moveX = -1
+		} else if dx < -1 {
+			moveX = 1
+		}
+
+		moveY := 0
+		if dy > 1 {
+			moveY = -1
+		} else if dy < -1 {
+			moveY = 1
+		}
+
+		positionToMove = Vec2{XPos: moveX, YPos: moveY}
+	} else {
+		lowestNeedType := getLowestNeedtype(e)
+
+		positionToMove = getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
+
+		// Move randomly if no resource found
+		if positionToMove.XPos < -1 || positionToMove.YPos < -1 { //THese are at both -1 as resource not found returns a -2, -2 Vec2
+			positionToMove = getRandomAdjacentPosition(prev_position, worldMap)
+		}
 	}
 
 	oldCell := &worldMap.Grid[prev_position.XPos][prev_position.YPos]
@@ -137,12 +159,21 @@ func getNearestCellResource(current_position Vec2, worldMap *World, resourceName
 		}
 	}
 
-	return Vec2{-1, -1} // not found
+	return Vec2{-2, -2} // not found
 }
 
 func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) bool {
 	current_pos := e.Position
 	current_cell := worldMap.Grid[current_pos.XPos][current_pos.YPos]
+
+	if e.EntitySettings.Activity == ShelterActivity {
+		if e.Position == e.Home {
+			shelterNeed := e.Needs[NeedShelter]
+
+			shelterNeed.Current += 3 // add in shelter happiness
+
+		}
+	}
 
 	for _, potential_entities := range current_cell.CellEntities {
 		if potential_entities.Name == e.Name {
@@ -155,7 +186,8 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 
 				for _, need := range e.Needs {
 					if need.Resource == resourceNeeded {
-						need.Current++
+						fmt.Println("** ATE FOOD **")
+						need.Current += need.ConsumeRate
 						break
 					}
 				}
