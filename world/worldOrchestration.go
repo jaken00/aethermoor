@@ -21,8 +21,7 @@ func (worldMap *World) TickWorld() {
 	for _, entity := range entitiesToProcess {
 		if len(entity.Needs) == 0 {
 			continue
-			//Add in tick grass here
-			//Not tick grass needs to do a Check if replenished
+			//Replenish Grass Function
 		}
 
 		entityDead := tickNeed(entity)

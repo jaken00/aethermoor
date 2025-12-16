@@ -7,10 +7,12 @@ func Die(e *Entity, worldMap *World) {
 	fmt.Println("    Final needs status:")
 
 	for needType, need := range e.Needs {
+
 		fmt.Printf("      %s (%s): %.2f/%.2f (threshold: %.2f)\n",
 			needType, need.Resource, need.Current, need.Max, need.Threshold)
 	}
-	fmt.Printf("Distance From Home: %d, %d", e.Position.XPos-e.Home.XPos, e.Position.YPos-e.Home.YPos)
+	fmt.Printf("Distance From Home: %d, %d\n", e.Position.XPos-e.Home.XPos, e.Position.YPos-e.Home.YPos)
+	fmt.Printf("Entity Current Activity: %s\n", e.EntitySettings.Activity)
 	fmt.Println("---------------------------")
 
 	entity_pos := *e.Position

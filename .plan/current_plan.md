@@ -1,21 +1,9 @@
-# Refactor Overview:
+# TODO ITEMS
 
-World
-  - Width, Height
-  - Cells[y][x] with TerrainType and maybe static resources
-  - Entities: map[EntityID]*Entity   (global registry)
-  - CellEntities: map[Vec2][]EntityID (who is standing in each tile)
-
-Entity
-  - ID, Name
-  - Position Vec2
-  - Needs map[ResourceType]*NeedEntry
-  - Produces []ResourceEntry
-  - Behavior: derived from needs each tick
-
-Tick()
-  - For each entity:
-      - tickNeeds()
-      - decideAction()
-      - maybe move to neighboring cell
-      - maybe consume or gain resources
+- Add in Humans to Kill the Wolves -> need a complex Need to check wolf pop and keep it in check 
+- Once we get this map Working and balanced. Extrapolate to Realm Map -> 10x10 of 10x10s 
+- Overhaul terrain logic 
+- Regenerate Grass (Right now the Current is removed but not regenerated every tick)
+- Fix Printing logic as well (Grass is shown even if it is current = 0)
+- Add combat logic for the wolf and the rabbit
+- Check if 2 entities are in the same location -> Create new entity (Do this after tick Move)

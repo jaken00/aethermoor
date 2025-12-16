@@ -34,12 +34,15 @@ func getLowestNeedtype(e *Entity) NeedType {
 
 		}
 	}
-	//May need to add in logic to make sure that we FINISH the shelter hunting so doesnt get stuck in loop of looking for shelter and then dying
-	switch currentLowestNeedType {
-	case NeedFood:
-		e.EntitySettings.Activity = HuntingActivity
-	case NeedShelter:
-		e.EntitySettings.Activity = ShelterActivity
+
+	//Using this to force entity home so they dont get in a loop of eating -> shelter -> eating
+	if e.EntitySettings.Activity != ShelterActivity {
+		switch currentLowestNeedType {
+		case NeedFood:
+			e.EntitySettings.Activity = HuntingActivity
+		case NeedShelter:
+			e.EntitySettings.Activity = ShelterActivity
+		}
 	}
 
 	return currentLowestNeedType
@@ -186,8 +189,8 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 	if e.EntitySettings.Activity == ShelterActivity {
 		if e.Position.XPos == e.Home.XPos && e.Position.YPos == e.Home.YPos {
 			shelterNeed := e.Needs[NeedShelter]
-
-			shelterNeed.Current += 3 // add in shelter reproduction
+			fmt.Printf("** GOT SHELTER ** ") // **TODO** Shelter Check Goes here
+			shelterNeed.Current += 3         // add in shelter reproduction
 
 		}
 	}
@@ -201,9 +204,15 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 			if potential_entities.Produces[i].Type == resourceNeeded && potential_entities.Produces[i].Current > 0 {
 				potential_entities.Produces[i].Current--
 
+				if potential_entities.Produces[i].Current <= 0 {
+					potential_entities.Alive = false
+				}
+
 				for _, need := range e.Needs {
 					if need.Resource == resourceNeeded {
-						fmt.Println("** ATE FOOD **")
+						// TODO: Need do bounds checking (make sure it stays below threshold)
+						fmt.Printf("** %s ATE %s ** (Current: %.1f -> %.1f)\n",
+							e.Name, resourceNeeded, need.Current, need.Current+need.ConsumeRate)
 						need.Current += need.ConsumeRate
 						break
 					}

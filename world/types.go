@@ -49,7 +49,7 @@ type ResourceEntry struct {
 	Type      ResourceType
 	Current   float64 //Current acoumt
 	Max       float64 // Max amount
-	RegenRate float64 //does this regen amount
+	RegenRate float64 // Regeneration (Useful for Grass)
 }
 
 type ResourceTerrainMapping struct {
