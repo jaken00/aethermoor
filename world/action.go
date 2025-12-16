@@ -45,6 +45,23 @@ func getLowestNeedtype(e *Entity) NeedType {
 	return currentLowestNeedType
 }
 
+// This gets the resource needed for the lowest need | Returns: ResourceType
+func getLowestNeedResource(e *Entity) ResourceType {
+	lowest := 50.0
+	var current float64
+	var lowestNeedResource ResourceType
+
+	for _, need := range e.Needs {
+		current = need.Current
+		if current < lowest {
+			lowestNeedResource = need.Resource
+			lowest = current
+		}
+	}
+
+	return lowestNeedResource
+}
+
 func getRandomAdjacentPosition(pos Vec2, worldMap *World) Vec2 {
 	directions := []struct{ dx, dy int }{
 		{-1, 0}, {1, 0}, {0, -1}, {0, 1}, // cardinal
@@ -92,11 +109,11 @@ func (e *Entity) MoveEntity(worldMap *World) {
 			moveY = 1
 		}
 
-		positionToMove = Vec2{XPos: moveX, YPos: moveY}
+		positionToMove = Vec2{XPos: e.Position.XPos + moveX, YPos: e.Position.YPos + moveY}
 	} else {
-		lowestNeedType := getLowestNeedtype(e)
+		getLowestNeedtype(e) // Update activity based on lowest need
 
-		positionToMove = getNearestCellResource(*e.Position, worldMap, ResourceType(lowestNeedType))
+		positionToMove = getNearestCellResource(*e.Position, worldMap, getLowestNeedResource(e))
 
 		// Move randomly if no resource found
 		if positionToMove.XPos < -1 || positionToMove.YPos < -1 { //THese are at both -1 as resource not found returns a -2, -2 Vec2
@@ -167,10 +184,10 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 	current_cell := worldMap.Grid[current_pos.XPos][current_pos.YPos]
 
 	if e.EntitySettings.Activity == ShelterActivity {
-		if e.Position == e.Home {
+		if e.Position.XPos == e.Home.XPos && e.Position.YPos == e.Home.YPos {
 			shelterNeed := e.Needs[NeedShelter]
 
-			shelterNeed.Current += 3 // add in shelter happiness
+			shelterNeed.Current += 3 // add in shelter reproduction
 
 		}
 	}

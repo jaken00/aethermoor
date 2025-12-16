@@ -10,6 +10,7 @@ func Die(e *Entity, worldMap *World) {
 		fmt.Printf("      %s (%s): %.2f/%.2f (threshold: %.2f)\n",
 			needType, need.Resource, need.Current, need.Max, need.Threshold)
 	}
+	fmt.Printf("Distance From Home: %d, %d", e.Position.XPos-e.Home.XPos, e.Position.YPos-e.Home.YPos)
 	fmt.Println("---------------------------")
 
 	entity_pos := *e.Position

@@ -32,7 +32,7 @@ func (worldMap *World) TickWorld() {
 			continue
 		}
 
-		if !entity.CheckCurrentCell(worldMap, ResourceType(getLowestNeedtype(entity))) {
+		if !entity.CheckCurrentCell(worldMap, getLowestNeedResource(entity)) {
 			entity.MoveEntity(worldMap) //Move if we cant find out lowest need type at the current location
 		}
 	}
