@@ -20,8 +20,9 @@ func (worldMap *World) TickWorld() {
 	// Now process each entity exactly once
 	for _, entity := range entitiesToProcess {
 		if len(entity.Needs) == 0 {
+			RegenerationCheck(entity)
 			continue
-			//Replenish Grass Function
+
 		}
 
 		entityDead := tickNeed(entity)

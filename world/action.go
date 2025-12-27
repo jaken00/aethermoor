@@ -19,6 +19,23 @@ func tickNeed(entity *Entity) bool {
 	return die
 }
 
+func RegenerationCheck(entity *Entity) {
+
+	for _, produceEntry := range entity.Produces { //May want to also have resource settings so im not going through grass, trees, etc.
+		if produceEntry.Type == ResourceGrass {
+			if int(produceEntry.RegenRate)%3 == 0 {
+				produceEntry.Current += 5
+				fmt.Println("GRASS REGEN!")
+				produceEntry.RegenRate += 1
+			} else {
+				produceEntry.RegenRate += 1
+			}
+
+		}
+	}
+
+}
+
 // This gets the current lowest need type when deciding action | Returns: NEEDTYPE
 func getLowestNeedtype(e *Entity) NeedType {
 	lowest := 50.0
