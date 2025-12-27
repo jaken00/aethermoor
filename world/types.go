@@ -56,9 +56,10 @@ type ResourceTerrainMapping struct {
 	ResourceDictionary map[string][]string
 }
 type EntitySettingsEntry struct {
-	Health   int
-	Attack   int
-	Activity CurrentActivity
+	Health       int
+	Attack       int
+	Activity     CurrentActivity
+	ActionPoints int
 }
 
 type NeedEntry struct {
@@ -70,6 +71,6 @@ type NeedEntry struct {
 	ConsumeRate float64 // how fast this need depletes
 }
 type AversionEntry struct {
-	Resource  string  // flee from entities that produce this resource -> WOLF -> CARNIVOREMEAT the MEAT is descriptor of the production
-	FleeRange float64 // within certain distance we want this to flee
+	Resource  ResourceType // flee from entities that produce this resource -> WOLF -> CARNIVOREMEAT the MEAT is descriptor of the production
+	FleeRange float64      // within certain distance we want this to flee
 }

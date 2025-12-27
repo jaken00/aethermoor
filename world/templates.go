@@ -24,7 +24,7 @@ type rawTemplateEntry struct {
 	Produces       []ResourceEntry        `json:"produces"`
 	Needs          []rawNeedEntry         `json:"needs"`
 	ShelterPrefs   []string               `json:"shelterPrefs"`
-	Aversions      []string               `json:"aversions"`
+	Aversions      []ResourceType         `json:"aversions"`
 	EntitySettings rawEntitySettingsEntry `json:"entity-settings"`
 }
 

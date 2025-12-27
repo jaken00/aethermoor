@@ -133,9 +133,8 @@ func (e *Entity) MoveEntity(worldMap *World) {
 	} else {
 		getLowestNeedtype(e) // Update activity based on lowest need
 
-		positionToMove = getNearestCellResource(*e.Position, worldMap, getLowestNeedResource(e))
+		positionToMove = getNearestCellResource(*e.Position, worldMap, getLowestNeedResource(e), e.Aversions)
 
-		// Move randomly if no resource found
 		if positionToMove.XPos < -1 || positionToMove.YPos < -1 { //THese are at both -1 as resource not found returns a -2, -2 Vec2
 			positionToMove = getRandomAdjacentPosition(prev_position, worldMap)
 		}
@@ -166,7 +165,7 @@ func (e *Entity) MoveEntity(worldMap *World) {
 	worldMap.CellEntities[positionToMove] = append(worldMap.CellEntities[positionToMove], e.Name)
 }
 
-func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType) Vec2 {
+func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType, aversions []AversionEntry) Vec2 {
 	directions := [8]Vec2{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
 
 	for _, dir := range directions {
@@ -188,6 +187,17 @@ func getNearestCellResource(current_position Vec2, worldMap *World, resourceName
 
 		for _, name := range entityNames {
 			entity := worldMap.Entities[name]
+
+			// Check if searcher is averse to anything this entity produces
+			for _, aversion := range aversions {
+				for _, prod := range entity.Produces {
+					if prod.Type == aversion.Resource {
+						return Vec2{-2, -2} // Run in random direction
+					}
+				}
+			}
+
+			// Check if entity produces what we're looking for
 			for _, prod := range entity.Produces {
 				if prod.Type == resourceName {
 					return checkPos
@@ -206,8 +216,8 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 	if e.EntitySettings.Activity == ShelterActivity {
 		if e.Position.XPos == e.Home.XPos && e.Position.YPos == e.Home.YPos {
 			shelterNeed := e.Needs[NeedShelter]
-			fmt.Printf("** GOT SHELTER ** ") // **TODO** Shelter Check Goes here
-			shelterNeed.Current += 3         // add in shelter reproduction
+			fmt.Printf("** GOT SHELTER ** ")
+			shelterNeed.Current += 3
 
 		}
 	}
@@ -227,7 +237,7 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 
 				for _, need := range e.Needs {
 					if need.Resource == resourceNeeded {
-						// TODO: Need do bounds checking (make sure it stays below threshold)
+
 						fmt.Printf("** %s ATE %s ** (Current: %.1f -> %.1f)\n",
 							e.Name, resourceNeeded, need.Current, need.Current+need.ConsumeRate)
 						need.Current += need.ConsumeRate
