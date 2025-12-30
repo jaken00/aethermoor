@@ -42,6 +42,7 @@ type Vec2 struct {
 	YPos int
 }
 type Entity struct {
+	//need to add a Speed and AP -> Maybe we add this in EntitySettings? -> This can be like where we add in all extra stats
 	Name           string
 	Type           EntityType
 	Position       *Vec2

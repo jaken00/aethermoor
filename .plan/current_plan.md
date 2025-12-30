@@ -25,7 +25,7 @@ GOALS FOR HOME TIME
         Why: This stops the "infinite loop" chase. Once a wolf bites a rabbit, the rabbit slows down, allowing the wolf to finish the kill.
 
     Loot & Carcass Generation
-        When an entity dies, it should leave behind a ResourceMeat object at that Vec2 instead of just disappearing.
+        When an entity dies, it should leave behind a Corpse  object at that Vec2 instead of just disappearing.
 
 3. HUMAN GENERATION & ROLES
 
