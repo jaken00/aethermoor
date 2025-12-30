@@ -31,7 +31,7 @@
     {
         "entityType": "GRASS",
         "produces": [
-            {"type": "GRASS", "max": 4, "regenRate": 5} 
+            {"type": "GRASS", "max": 4, "regenRate": 3} 
         ],
         "entity-settings": {"health" : 4, "attack": 0, "activity": null} 
     }

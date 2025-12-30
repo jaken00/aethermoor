@@ -19,6 +19,23 @@ func tickNeed(entity *Entity) bool {
 	return die
 }
 
+func RegenerationCheck(entity *Entity) {
+
+	for _, produceEntry := range entity.Produces { //May want to also have resource settings so im not going through grass, trees, etc.
+		if produceEntry.Type == ResourceGrass {
+			if int(produceEntry.RegenRate)%3 == 0 {
+				produceEntry.Current += 5
+				fmt.Println("GRASS REGEN!")
+				produceEntry.RegenRate += 1
+			} else {
+				produceEntry.RegenRate += 1
+			}
+
+		}
+	}
+
+}
+
 // This gets the current lowest need type when deciding action | Returns: NEEDTYPE
 func getLowestNeedtype(e *Entity) NeedType {
 	lowest := 50.0
@@ -116,9 +133,8 @@ func (e *Entity) MoveEntity(worldMap *World) {
 	} else {
 		getLowestNeedtype(e) // Update activity based on lowest need
 
-		positionToMove = getNearestCellResource(*e.Position, worldMap, getLowestNeedResource(e))
+		positionToMove = getNearestCellResource(*e.Position, worldMap, getLowestNeedResource(e), e.Aversions)
 
-		// Move randomly if no resource found
 		if positionToMove.XPos < -1 || positionToMove.YPos < -1 { //THese are at both -1 as resource not found returns a -2, -2 Vec2
 			positionToMove = getRandomAdjacentPosition(prev_position, worldMap)
 		}
@@ -149,7 +165,7 @@ func (e *Entity) MoveEntity(worldMap *World) {
 	worldMap.CellEntities[positionToMove] = append(worldMap.CellEntities[positionToMove], e.Name)
 }
 
-func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType) Vec2 {
+func getNearestCellResource(current_position Vec2, worldMap *World, resourceName ResourceType, aversions []AversionEntry) Vec2 {
 	directions := [8]Vec2{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
 
 	for _, dir := range directions {
@@ -171,6 +187,17 @@ func getNearestCellResource(current_position Vec2, worldMap *World, resourceName
 
 		for _, name := range entityNames {
 			entity := worldMap.Entities[name]
+
+			// Check if searcher is averse to anything this entity produces
+			for _, aversion := range aversions {
+				for _, prod := range entity.Produces {
+					if prod.Type == aversion.Resource {
+						return Vec2{-2, -2} // Run in random direction
+					}
+				}
+			}
+
+			// Check if entity produces what we're looking for
 			for _, prod := range entity.Produces {
 				if prod.Type == resourceName {
 					return checkPos
@@ -189,8 +216,8 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 	if e.EntitySettings.Activity == ShelterActivity {
 		if e.Position.XPos == e.Home.XPos && e.Position.YPos == e.Home.YPos {
 			shelterNeed := e.Needs[NeedShelter]
-			fmt.Printf("** GOT SHELTER ** ") // **TODO** Shelter Check Goes here
-			shelterNeed.Current += 3         // add in shelter reproduction
+			fmt.Printf("** GOT SHELTER ** ")
+			shelterNeed.Current += 3
 
 		}
 	}
