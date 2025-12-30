@@ -21,6 +21,7 @@ type rawEntitySettingsEntry struct {
 }
 
 type rawTemplateEntry struct {
+	EntityType     string                 `json:"entityType"`
 	Produces       []ResourceEntry        `json:"produces"`
 	Needs          []rawNeedEntry         `json:"needs"`
 	ShelterPrefs   []string               `json:"shelterPrefs"`
@@ -31,6 +32,7 @@ type rawTemplateEntry struct {
 // EntityTemplate is the loaded template (not a live entity)
 type EntityTemplate struct {
 	TemplateName   string
+	EntityType     string
 	Produces       []ResourceEntry
 	Needs          map[NeedType]*NeedEntry
 	ShelterPrefs   []string
@@ -54,6 +56,7 @@ func LoadTemplates(path string) (map[string]EntityTemplate, error) {
 	for name, r := range raw {
 		template := EntityTemplate{
 			TemplateName:   name,
+			EntityType:     r.EntityType,
 			Produces:       r.Produces,
 			ShelterPrefs:   r.ShelterPrefs,
 			Needs:          make(map[NeedType]*NeedEntry),
@@ -87,6 +90,7 @@ func SpawnEntityFromTemplate(template EntityTemplate, pos Vec2, id string) *Enti
 		Name:     id,
 		Position: &Vec2{XPos: pos.XPos, YPos: pos.YPos},
 		Alive:    true,
+		Type:     EntityType(template.EntityType),
 	}
 
 	// Deep copy slices

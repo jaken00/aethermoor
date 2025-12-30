@@ -211,9 +211,19 @@ func (e *Entity) CheckCurrentCell(worldMap *World, resourceNeeded ResourceType) 
 				for _, need := range e.Needs {
 					if need.Resource == resourceNeeded {
 						// TODO: Need do bounds checking (make sure it stays below threshold)
-						fmt.Printf("** %s ATE %s ** (Current: %.1f -> %.1f)\n",
-							e.Name, resourceNeeded, need.Current, need.Current+need.ConsumeRate)
-						need.Current += need.ConsumeRate
+
+						// here we need to also need to create a corpse on death
+						if e.Type == WolfEntity {
+							killedEnemy := attack(e, potential_entities)
+							if killedEnemy {
+								need.Current += need.ConsumeRate
+								fmt.Printf("** %s ATE %s ** (Current: %.1f -> %.1f)\n",
+									e.Name, resourceNeeded, need.Current, need.Current+need.ConsumeRate)
+							}
+						} else {
+							need.Current += need.ConsumeRate
+						}
+
 						break
 					}
 				}

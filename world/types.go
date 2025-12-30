@@ -4,6 +4,7 @@ type TerrainType string
 type ResourceType string
 type NeedType string
 type CurrentActivity string
+type EntityType string
 
 const (
 	TerrainPlains    TerrainType = "PLAINS"
@@ -30,12 +31,19 @@ const (
 	NeedShelter NeedType = "SHELTER"
 )
 
+const (
+	WolfEntity   EntityType = "WOLF"
+	GrassEntity  EntityType = "GRASS"
+	RabbitEntity EntityType = "RABBIT"
+)
+
 type Vec2 struct {
 	XPos int
 	YPos int
 }
 type Entity struct {
 	Name           string
+	Type           EntityType
 	Position       *Vec2
 	Alive          bool
 	Produces       []ResourceEntry
@@ -59,6 +67,11 @@ type EntitySettingsEntry struct {
 	Health   int
 	Attack   int
 	Activity CurrentActivity
+}
+
+type Corpse struct {
+	ResourceCorpse ResourceType
+	Current        float64
 }
 
 type NeedEntry struct {

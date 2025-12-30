@@ -34,3 +34,18 @@ func Die(e *Entity, worldMap *World) {
 		}
 	}
 }
+
+func attack(attacker *Entity, defender *Entity) bool {
+	fmt.Printf("CLALED THIS FUNTION ATTACK BANG")
+	attackerValue := attacker.EntitySettings.Attack
+
+	defender.EntitySettings.Health -= attackerValue
+
+	if defender.EntitySettings.Health <= 0 {
+		//they will also die. -> we need to make a corpse struct
+		return true
+	}
+
+	return false
+
+}
